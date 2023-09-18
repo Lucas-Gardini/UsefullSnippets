@@ -1666,6 +1666,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     vitepress: ^1.0.0-rc.14
+    vue: ^3.3.4
   languageName: unknown
   linkType: soft
 
