@@ -230,3 +230,301 @@ caminho = grafo.menor_caminho("A", "C")
 print("Menor caminho de A para C:", caminho)
 
 ```
+
+## Grafo (Busca em Largura - BFS)
+O BFS é usado para percorrer grafos em largura.
+
+```py
+from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    while queue:
+        vertex = queue.popleft()
+        if vertex not in visited:
+            visited.add(vertex)
+            queue.extend(graph[vertex] - visited)
+    return visited
+
+# Exemplo de uso:
+graph = {
+    'A': {'B', 'C'},
+    'B': {'A', 'D', 'E'},
+    'C': {'A', 'F'},
+    'D': {'B'},
+    'E': {'B', 'F'},
+    'F': {'C', 'E'}
+}
+start_node = 'A'
+visited = bfs(graph, start_node)
+print("Nós visitados em ordem de BFS:", visited)
+```
+
+## Operações com dicionário
+
+### Ordenar pelo valor
+
+```py
+x = {1: 2, 3: 4, 4: 3, 2: 1, 0: 0}
+x_sorted = dict(sorted(x.items(), key=lambda item: item[1]))
+# result: {0: 0, 2: 1, 1: 2, 4: 3, 3: 4}
+```
+
+### Ordenar pela chave
+
+```py
+import collections
+
+x = {1: 2, 3: 4, 4: 3, 2: 1, 0: 0}
+
+sorted_x = sorted(x.items(), key=lambda kv: kv[1]) # Saída é uma tupla
+
+sorted_dict = collections.OrderedDict(sorted_x) # Retorna um dicionário ordenado
+```
+
+## Busca binária
+A busca binária é um algoritmo eficiente para encontrar um elemento em um array ordenado.
+
+```py
+def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+
+# Exemplo de uso:
+arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+target = 6
+result = binary_search(arr, target)
+if result != -1:
+    print(f"O elemento {target} está na posição {result}.")
+else:
+    print("O elemento não foi encontrado.")
+
+```
+
+## Programação dinâmica
+A programação dinâmica é uma técnica usada para resolver problemas de otimização.
+
+```
+def fibonacci(n):
+    fib = [0] * (n + 1)
+    fib[1] = 1
+    for i in range(2, n + 1):
+        fib[i] = fib[i - 1] + fib[i - 2]
+    return fib[n]
+
+# Exemplo de uso:
+n = 10
+result = fibonacci(n)
+print(f"O {n}-ésimo número de Fibonacci é {result}.")
+```
+
+
+## Árvore de segmentos
+A árvore de segmentos é usada para consultas de intervalo em arrays.
+
+```py
+class SegmentTree:
+    def __init__(self, arr):
+        self.arr = arr
+        self.tree = [0] * (4 * len(arr))
+        
+    def build(self, node, start, end):
+        if start == end:
+            self.tree[node] = self.arr[start]
+            return
+        mid = (start + end) // 2
+        self.build(2 * node, start, mid)
+        self.build(2 * node + 1, mid + 1, end)
+        self.tree[node] = self.tree[2 * node] + self.tree[2 * node + 1]
+        
+    def query(self, node, start, end, left, right):
+        if left > end or right < start:
+            return 0
+        if left <= start and right >= end:
+            return self.tree[node]
+        mid = (start + end) // 2
+        left_sum = self.query(2 * node, start, mid, left, right)
+        right_sum = self.query(2 * node + 1, mid + 1, end, left, right)
+        return left_sum + right_sum
+
+# Exemplo de uso:
+arr = [1, 3, 5, 7, 9, 11, 13]
+segment_tree = SegmentTree(arr)
+segment_tree.build(1, 0, len(arr) - 1)
+left_index, right_index = 1, 4
+result = segment_tree.query(1, 0, len(arr) - 1, left_index, right_index)
+print(f"A soma no intervalo [{left_index}, {right_index}] é {result}.")
+```
+
+## Algoritmo de Dijkstra
+
+O algoritmo de Dijkstra é usado para encontrar o caminho mais curto em um grafo ponderado.
+
+```py
+import heapq
+
+def dijkstra(graph, start):
+    distances = {node: float('infinity') for node in graph}
+    distances[start] = 0
+    queue = [(0, start)]
+    while queue:
+        current_distance, current_node = heapq.heappop(queue)
+        if current_distance > distances[current_node]:
+            continue
+        for neighbor, weight in graph[current_node].items():
+            distance = current_distance + weight
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                heapq.heappush(queue, (distance, neighbor))
+    return distances
+
+# Exemplo de uso:
+graph = {
+    'A': {'B': 1, 'C': 4},
+    'B': {'A': 1, 'C': 2, 'D': 5},
+    'C': {'A': 4, 'B': 2, 'D': 1},
+    'D': {'B': 5, 'C': 1}
+}
+start_node = 'A'
+shortest_distances = dijkstra(graph, start_node)
+print("Distâncias mais curtas a partir de A:", shortest_distances)
+```
+
+## Algoritmo de Kruskal
+
+O algoritmo de Kruskal é usado para encontrar a árvore geradora mínima de um grafo ponderado.
+
+```py
+def kruskal(graph):
+    def find(parent, node):
+        if parent[node] == node:
+            return node
+        return find(parent, parent[node])
+    
+    def union(parent, x, y):
+        x_root = find(parent, x)
+        y_root = find(parent, y)
+        parent[x_root] = y_root
+    
+    edges = []
+    for node in graph:
+        for neighbor, weight in graph[node].items():
+            edges.append((weight, node, neighbor))
+    edges.sort()
+    
+    minimum_spanning_tree = {}
+    parent = {node: node for node in graph}
+    
+    for weight, u, v in edges:
+        if find(parent, u) != find(parent, v):
+            union(parent, u, v)
+            if u in minimum_spanning_tree:
+                minimum_spanning_tree[u][v] = weight
+            else:
+                minimum_spanning_tree[u] = {v: weight}
+    return minimum_spanning_tree
+
+
+# Exemplo de uso:
+graph = {
+    'A': {'B': 1, 'C': 4},
+    'B': {'A': 1, 'C': 2, 'D': 5},
+    'C': {'A': 4, 'B': 2, 'D': 1},
+    'D': {'B': 5, 'C': 1}
+}
+minimum_spanning_tree = kruskal(graph)
+print("Árvore Geradora Mínima:", minimum_spanning_tree)
+```
+
+## Algoritmo de Kadane para Maior Subarray Contíguo (Subarray Máximo)
+
+Este algoritmo encontra o maior subarray contíguo em uma lista de números.
+
+```py
+def max_subarray(arr):
+    max_sum = current_sum = arr[0]
+    for num in arr[1:]:
+        current_sum = max(num, current_sum + num)
+        max_sum = max(max_sum, current_sum)
+    return max_sum
+
+# Exemplo de uso:
+arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+max_sum = max_subarray(arr)
+print("Maior subarray contíguo:", max_sum)
+```
+
+## Algoritmo de Ordenação por Contagem (Counting Sort)
+
+O Counting Sort é um algoritmo de ordenação eficiente para números inteiros em um intervalo específico.
+
+```py
+def counting_sort(arr):
+    max_val = max(arr)
+    min_val = min(arr)
+    count = [0] * (max_val - min_val + 1)
+    output = [0] * len(arr)
+    for num in arr:
+        count[num - min_val] += 1
+    for i in range(1, len(count)):
+        count[i] += count[i - 1]
+    for num in arr:
+        output[count[num - min_val] - 1] = num
+        count[num - min_val] -= 1
+    return output
+
+# Exemplo de uso:
+arr = [4, 2, 2, 8, 3, 3, 1]
+sorted_arr = counting_sort(arr)
+print("Lista ordenada:", sorted_arr)
+```
+
+## Algoritmo de Busca de Substring (KMP)
+
+O algoritmo KMP é usado para encontrar todas as ocorrências de uma substring em uma string.
+
+```py
+def kmp_search(text, pattern):
+    def build_lps(pattern):
+        lps = [0] * len(pattern)
+        j = 0
+        for i in range(1, len(pattern)):
+            while j > 0 and pattern[i] != pattern[j]:
+                j = lps[j - 1]
+            if pattern[i] == pattern[j]:
+                j += 1
+            lps[i] = j
+        return lps
+    
+    lps = build_lps(pattern)
+    i = j = 0
+    matches = []
+    while i < len(text):
+        if pattern[j] == text[i]:
+            i += 1
+            j += 1
+        if j == len(pattern):
+            matches.append(i - j)
+            j = lps[j - 1]
+        elif i < len(text) and pattern[j] != text[i]:
+            if j != 0:
+                j = lps[j - 1]
+            else:
+                i += 1
+    return matches
+
+# Exemplo de uso:
+text = "ABABDABACDABABCABAB"
+pattern = "ABABCABAB"
+positions = kmp_search(text, pattern)
+print("Posições das ocorrências:", positions)
+```
