@@ -232,6 +232,7 @@ print("Menor caminho de A para C:", caminho)
 ```
 
 ## Grafo (Busca em Largura - BFS)
+
 O BFS é usado para percorrer grafos em largura.
 
 ```py
@@ -284,6 +285,7 @@ sorted_dict = collections.OrderedDict(sorted_x) # Retorna um dicionário ordenad
 ```
 
 ## Busca binária
+
 A busca binária é um algoritmo eficiente para encontrar um elemento em um array ordenado.
 
 ```py
@@ -311,6 +313,7 @@ else:
 ```
 
 ## Programação dinâmica
+
 A programação dinâmica é uma técnica usada para resolver problemas de otimização.
 
 ```
@@ -327,8 +330,8 @@ result = fibonacci(n)
 print(f"O {n}-ésimo número de Fibonacci é {result}.")
 ```
 
-
 ## Árvore de segmentos
+
 A árvore de segmentos é usada para consultas de intervalo em arrays.
 
 ```py
@@ -336,7 +339,7 @@ class SegmentTree:
     def __init__(self, arr):
         self.arr = arr
         self.tree = [0] * (4 * len(arr))
-        
+
     def build(self, node, start, end):
         if start == end:
             self.tree[node] = self.arr[start]
@@ -345,7 +348,7 @@ class SegmentTree:
         self.build(2 * node, start, mid)
         self.build(2 * node + 1, mid + 1, end)
         self.tree[node] = self.tree[2 * node] + self.tree[2 * node + 1]
-        
+
     def query(self, node, start, end, left, right):
         if left > end or right < start:
             return 0
@@ -409,21 +412,21 @@ def kruskal(graph):
         if parent[node] == node:
             return node
         return find(parent, parent[node])
-    
+
     def union(parent, x, y):
         x_root = find(parent, x)
         y_root = find(parent, y)
         parent[x_root] = y_root
-    
+
     edges = []
     for node in graph:
         for neighbor, weight in graph[node].items():
             edges.append((weight, node, neighbor))
     edges.sort()
-    
+
     minimum_spanning_tree = {}
     parent = {node: node for node in graph}
-    
+
     for weight, u, v in edges:
         if find(parent, u) != find(parent, v):
             union(parent, u, v)
@@ -504,7 +507,7 @@ def kmp_search(text, pattern):
                 j += 1
             lps[i] = j
         return lps
-    
+
     lps = build_lps(pattern)
     i = j = 0
     matches = []
@@ -527,4 +530,173 @@ text = "ABABDABACDABABCABAB"
 pattern = "ABABCABAB"
 positions = kmp_search(text, pattern)
 print("Posições das ocorrências:", positions)
+```
+
+## Menor Quantidade de Cédulas
+
+Código para calcular a menor quantidade de cédulas para um determinado valor.
+
+```py
+def menor_quantidade_cedulas(N, valores_cedulas, valor_cheque):
+    # Aplicando Counting Sort para ordenar as cédulas
+    counting_sort = [0] * (max(valores_cedulas) + 1)
+    for valor in valores_cedulas:
+        counting_sort[valor] += 1
+
+    # Calculando a quantidade mínima de cédulas
+    quantidade_cedulas = 0
+    for valor in reversed(range(len(counting_sort))):
+        qtd_notas = min(valor_cheque // valor, counting_sort[valor])
+        quantidade_cedulas += qtd_notas
+        valor_cheque -= qtd_notas * valor
+
+    return quantidade_cedulas
+
+# Exemplo de uso
+N = 3
+valores_cedulas = [5, 1, 10]
+valor_cheque = 28
+resultado = menor_quantidade_cedulas(N, valores_cedulas, valor_cheque)
+print(resultado)
+```
+
+## Árvore Genealógica e Verificação de Parentesco
+
+Código para verificar se duas pessoas são parentes.
+
+```py
+class Pessoa:
+    def __init__(self, nome):
+        self.nome = nome
+        self.pais = set()
+
+def construir_arvore_pessoas(relacoes):
+    pessoas = {}
+
+    for pai1, pai2, filho in relacoes:
+        if pai1 not in pessoas:
+            pessoas[pai1] = Pessoa(pai1)
+        if pai2 not in pessoas:
+            pessoas[pai2] = Pessoa(pai2)
+        if filho not in pessoas:
+            pessoas[filho] = Pessoa(filho)
+
+        pessoas[filho].pais.add(pai1)
+        pessoas[filho].pais.add(pai2)
+
+    return pessoas
+
+def tem_parentesco(arvore_pessoas, pessoa1, pessoa2):
+    visitados = set()
+
+    def dfs(pessoa, alvo):
+        if pessoa == alvo:
+            return True
+        visitados.add(pessoa)
+        for pai in arvore_pessoas[pessoa].pais:
+            if pai not in visitados and dfs(pai, alvo):
+                return True
+        return False
+
+    return dfs(pessoa1, pessoa2) or dfs(pessoa2, pessoa1)
+
+# Entrada
+N, C, T = map(int, input().split())
+
+relacoes_parentesco = [input().split() for _ in range(C)]
+
+arvore_pessoas = construir_arvore_pessoas(relacoes_parentesco)
+
+# Processamento dos casos de teste
+for _ in range(T):
+    pessoa1, pessoa2 = input().split()
+    resultado = tem_parentesco(arvore_pessoas, pessoa1, pessoa2)
+    print("verdadeiro" if resultado else "falso")
+```
+
+Exemplos de Entradas
+11 6 5
+Ana Ivo Eva
+Bia Gil Rai
+Bia Gil Clo
+Bia Gil Ary
+Eva Rai Noe
+Ary Lia Gal
+Eva Ary
+Noe Gal
+Lia Rai
+Lia Noe
+Gal Rai
+
+Exemplos de Saídas
+falso
+verdadeiro
+falso
+falso
+verdadeir
+
+## Função de Verificação de Palíndromo
+
+```py
+def pode_formar_palindromo(s):
+    # Cria um dicionário para contar a frequência de cada caractere na string
+    contagem_caracteres = {}
+    for char in s:
+        contagem_caracteres[char] = contagem_caracteres.get(char, 0) + 1
+
+    # Conta quantos caracteres têm uma contagem ímpar
+    contagem_impares = sum(1 for contagem in contagem_caracteres.values() if contagem % 2 != 0)
+
+    # Se tiver no máximo um caractere com contagem ímpar, pode formar um palíndromo
+    return contagem_impares <= 1
+```
+
+## Função para Contar Palavras
+
+```py
+def count_words(grid, words):
+    word_counts = {word: 0 for word in words}
+
+    rows = len(grid)
+    cols = len(grid[0])
+
+    # Horizontal
+    for row in range(rows):
+        for col in range(cols):
+            for word in words:
+                # Verifica se a palavra aparece na horizontal da esquerda para a direita
+                if ''.join(grid[row][col:col + len(word)]) == word:
+                    word_counts[word] += 1
+
+    # Vertical
+    for col in range(cols):
+        for row in range(rows):
+            for word in words:
+                # Cria uma string vertical para verificar a palavra de cima para baixo
+                vertical_word = ''.join(grid[row + k][col] for k in range(len(word))) if row + len(word) <= rows else ''
+                if vertical_word == word:
+                    word_counts[word] += 1
+
+    return word_counts
+
+# Exemplo de entrada
+matrix_dim = input().split()
+rows = int(matrix_dim[0])
+cols = int(matrix_dim[1])
+
+matrix = []
+for _ in range(rows):
+    row = input().split()
+    matrix.append(row)
+
+words_to_find = input().split()
+
+# Contagem das palavras na grade de letras
+word_counts = count_words(matrix, words_to_find)
+
+# Exibição dos resultados
+for word in words_to_find:
+    count = word_counts[word]
+    print(f"{word}: {count}")
+
 ```
